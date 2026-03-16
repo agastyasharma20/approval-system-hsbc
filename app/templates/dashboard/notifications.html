@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Notifications{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div class="page-title">Notifications</div>
+</div>
+<div class="card" style="max-width:720px;">
+  <div class="card-body">
+    {% if notifications %}
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      {% for n in notifications %}
+      <div style="padding:14px 18px;border:1px solid var(--border);border-radius:6px;background:{% if not n.is_read %}#fff8f8{% else %}#fafafa{% endif %};">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+          <div>
+            <div style="font-weight:600;font-size:14px;">{{ n.title }}</div>
+            <div style="color:var(--grey);font-size:13.5px;margin-top:4px;">{{ n.body }}</div>
+          </div>
+          <div style="font-size:11px;color:var(--muted);white-space:nowrap;margin-left:16px;">{{ n.created_at | dtformat }}</div>
+        </div>
+        {% if n.request_id %}
+        <a href="/requests/{{ n.request_id }}" style="font-size:12px;color:var(--red);font-weight:600;margin-top:8px;display:inline-block;">View Request →</a>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <div class="empty-icon">🔔</div>
+      <div class="empty-title">No notifications</div>
+      <div class="empty-body">You're all caught up!</div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

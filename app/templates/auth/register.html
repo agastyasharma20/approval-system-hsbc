@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Register — SmartApprove</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/static/css/main.css"/>
+</head>
+<body>
+<div class="auth-page">
+  <div class="auth-card" style="max-width:460px;">
+    <div class="auth-header">
+      <div class="auth-brand">
+        <div class="hsbc-logo"><div></div><div></div><div></div><div></div></div>
+        <span style="font-family:'Playfair Display',serif;color:white;font-size:20px;">SmartApprove</span>
+      </div>
+      <div style="color:#888;font-size:13px;margin-top:6px;">Create your corporate account</div>
+    </div>
+    <div class="auth-body">
+      {% if error %}
+      <div class="alert alert-error">{{ error }}</div>
+      {% endif %}
+      <form method="post" action="/auth/register">
+        <div class="form-group" style="margin-bottom:14px;">
+          <label>Full Name *</label>
+          <input type="text" name="full_name" placeholder="Alex Morgan" required autofocus/>
+        </div>
+        <div class="form-group" style="margin-bottom:14px;">
+          <label>Work Email *</label>
+          <input type="email" name="email" placeholder="alex@company.com" required/>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">
+          <div class="form-group">
+            <label>Employee ID</label>
+            <input type="text" name="employee_id" placeholder="EMP-001"/>
+          </div>
+          <div class="form-group">
+            <label>Department</label>
+            <input type="text" name="department" placeholder="Technology"/>
+          </div>
+        </div>
+        <div class="form-group" style="margin-bottom:20px;">
+          <label>Password * (min 8 characters)</label>
+          <input type="password" name="password" placeholder="Min 8 characters" required/>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%;padding:12px;font-size:15px;">
+          Create Account →
+        </button>
+      </form>
+    </div>
+    <div class="auth-footer">Already have an account? <a href="/auth/login">Sign in</a></div>
+  </div>
+</div>
+</body>
+</html>

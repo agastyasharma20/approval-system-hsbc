@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block title %}New Request{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <div class="page-title">Submit Approval Request</div>
+    <div class="page-subtitle">Fill in the details below and assign an approver</div>
+  </div>
+  <a href="/requests/" class="btn btn-ghost">← Back</a>
+</div>
+
+<form method="post" action="/requests/new" enctype="multipart/form-data">
+<div style="display:grid;grid-template-columns:1fr 340px;gap:20px;align-items:start;">
+
+  <div class="card">
+    <div class="card-header"><span class="card-title">Request Details</span></div>
+    <div class="card-body">
+      <div class="form-grid">
+        <div class="form-group span-2">
+          <label>Request Title *</label>
+          <input type="text" name="title" placeholder="e.g. Q2 Marketing Budget Approval" required/>
+        </div>
+        <div class="form-group">
+          <label>Category *</label>
+          <select name="category" required>
+            <option value="">Select…</option>
+            {% for c in categories %}
+            <option value="{{ c }}">{{ c }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Priority *</label>
+          <select name="priority" required>
+            <option value="">Select…</option>
+            {% for p in priorities %}
+            <option value="{{ p }}">{{ p }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Approver *</label>
+          <select name="approver_id" required>
+            <option value="">Select approver…</option>
+            {% for m in managers %}
+            <option value="{{ m.id }}">{{ m.full_name }} ({{ m.role.value|capitalize }}){% if m.department %} · {{ m.department }}{% endif %}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Due Date</label>
+          <input type="date" name="due_date"/>
+        </div>
+        <div class="form-group">
+          <label>Amount</label>
+          <input type="text" name="amount" placeholder="e.g. 5000"/>
+        </div>
+        <div class="form-group">
+          <label>Currency</label>
+          <select name="currency">
+            <option value="GBP">GBP (£)</option>
+            <option value="USD">USD ($)</option>
+            <option value="EUR">EUR (€)</option>
+            <option value="INR">INR (₹)</option>
+          </select>
+        </div>
+        <div class="form-group span-2">
+          <label>Description &amp; Business Justification *</label>
+          <textarea name="description" rows="6" placeholder="Provide full context, business justification, and supporting information…" required></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:16px;">
+    <div class="card">
+      <div class="card-header"><span class="card-title">Attachments</span></div>
+      <div class="card-body">
+        <div class="dropzone">
+          <input type="file" name="files" multiple accept=".pdf,.docx,.xlsx,.png,.jpg,.jpeg"/>
+          <div>
+            <div style="font-size:24px;margin-bottom:8px;">📎</div>
+            <div class="dz-label">Drag &amp; drop or click to browse</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:6px;">PDF, DOCX, XLSX, PNG, JPG · Max 10MB</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><span class="card-title">Priority Guide</span></div>
+      <div class="card-body" style="padding:16px;">
+        <div style="display:flex;flex-direction:column;gap:10px;font-size:13px;">
+          <div><span class="badge badge-Critical"><span class="badge-dot"></span>Critical</span><div style="color:var(--muted);margin-top:3px;">Business-blocking, immediate.</div></div>
+          <div><span class="badge badge-High"><span class="badge-dot"></span>High</span><div style="color:var(--muted);margin-top:3px;">Within 24 hours.</div></div>
+          <div><span class="badge badge-Medium"><span class="badge-dot"></span>Medium</span><div style="color:var(--muted);margin-top:3px;">Within 3 business days.</div></div>
+          <div><span class="badge badge-Low"><span class="badge-dot"></span>Low</span><div style="color:var(--muted);margin-top:3px;">Within 1 week.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:10px;">
+      <a href="/requests/" class="btn btn-ghost" style="flex:1;justify-content:center;">Cancel</a>
+      <button type="submit" class="btn btn-primary" style="flex:2;">Submit →</button>
+    </div>
+  </div>
+
+</div>
+</form>
+{% endblock %}

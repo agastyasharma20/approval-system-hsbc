@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}Requests{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <div class="page-title">{% if current_user.role.value in ['manager','admin'] %}All Requests{% else %}My Requests{% endif %}</div>
+    <div class="page-subtitle">{{ total }} request{{ 's' if total != 1 }}</div>
+  </div>
+  <a href="/requests/new" class="btn btn-primary">+ New Request</a>
+</div>
+
+<div class="card">
+  <div class="filters-bar">
+    <a href="/requests/" class="filter-chip {% if not status_filter %}active{% endif %}">All</a>
+    {% for s in statuses %}
+    <a href="/requests/?status_filter={{ s }}" class="filter-chip {% if status_filter == s %}active{% endif %}">{{ s }}</a>
+    {% endfor %}
+    <span style="color:#ddd;">|</span>
+    {% for p in priorities %}
+    <a href="/requests/?priority_filter={{ p }}" class="filter-chip {% if priority_filter == p %}active{% endif %}">{{ p }}</a>
+    {% endfor %}
+    <div style="margin-left:auto;">
+      <input type="text" id="table-search" placeholder="Search…" style="padding:6px 14px;border:1.5px solid var(--border);border-radius:6px;font-size:13px;"/>
+    </div>
+  </div>
+
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>Ref</th>
+          {% if current_user.role.value in ['manager','admin'] %}<th>Requester</th>{% endif %}
+          <th>Title</th><th>Category</th><th>Priority</th><th>Status</th><th>Date</th><th></th>
+        </tr>
+      </thead>
+      <tbody>
+      {% if reqs %}
+        {% for r in reqs %}
+        <tr>
+          <td><code style="color:var(--red);font-size:12px;">{{ r.ref }}</code></td>
+          {% if current_user.role.value in ['manager','admin'] %}
+          <td>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div style="width:26px;height:26px;border-radius:50%;background:var(--charcoal);color:white;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;">{{ r.requester.initials() }}</div>
+              {{ r.requester.full_name }}
+            </div>
+          </td>
+          {% endif %}
+          <td style="font-weight:500;max-width:220px;">{{ r.title }}</td>
+          <td style="color:var(--grey);font-size:13px;">{{ r.category }}</td>
+          <td><span class="badge badge-{{ r.priority.value }}"><span class="badge-dot"></span>{{ r.priority.value }}</span></td>
+          <td><span class="badge status-{{ r.status.value }}">{{ r.status.value }}</span></td>
+          <td style="color:var(--muted);font-size:12px;">{{ r.submitted_at | dtformat }}</td>
+          <td><a href="/requests/{{ r.id }}" class="btn btn-ghost btn-sm">View</a></td>
+        </tr>
+        {% endfor %}
+      {% else %}
+        <tr><td colspan="9">
+          <div class="empty-state">
+            <div class="empty-icon">📭</div>
+            <div class="empty-title">No requests found</div>
+            <div class="empty-body"><a href="/requests/new" style="color:var(--red)">Submit a new request</a></div>
+          </div>
+        </td></tr>
+      {% endif %}
+      </tbody>
+    </table>
+  </div>
+
+  {% if pages > 1 %}
+  <div class="pagination">
+    {% for p in range(1, pages+1) %}
+    <a href="/requests/?page={{ p }}{% if status_filter %}&status_filter={{ status_filter }}{% endif %}"
+       class="page-btn {% if p == page %}current{% endif %}">{{ p }}</a>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

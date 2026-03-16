@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <div class="page-title">Good day, {{ current_user.full_name.split(' ')[0] }} 👋</div>
+    <div class="page-subtitle">Corporate Approval Management Dashboard</div>
+  </div>
+  <a href="/requests/new" class="btn btn-primary">+ New Request</a>
+</div>
+
+<div class="stats-grid">
+  <div class="stat-card" style="--accent:#E8700A">
+    <div class="stat-num">{{ stats.pending }}</div>
+    <div class="stat-label">Pending</div>
+  </div>
+  <div class="stat-card" style="--accent:#1a8a3d">
+    <div class="stat-num">{{ stats.approved }}</div>
+    <div class="stat-label">Approved</div>
+  </div>
+  <div class="stat-card" style="--accent:#DB0011">
+    <div class="stat-num">{{ stats.rejected }}</div>
+    <div class="stat-label">Rejected</div>
+  </div>
+  <div class="stat-card" style="--accent:#6366f1">
+    <div class="stat-num">{{ stats.total }}</div>
+    <div class="stat-label">Total</div>
+  </div>
+  {% if stats.critical > 0 %}
+  <div class="stat-card" style="--accent:#DB0011">
+    <div class="stat-num" style="color:#DB0011">{{ stats.critical }}</div>
+    <div class="stat-label">⚠ Critical</div>
+  </div>
+  {% endif %}
+</div>
+
+<div style="display:grid;grid-template-columns:{% if pending_for_me %}1fr 380px{% else %}1fr{% endif %};gap:20px;align-items:start;">
+
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Recent Requests</span>
+      <a href="/requests/" class="btn btn-ghost btn-sm">View All</a>
+    </div>
+    <div class="table-wrapper">
+      <table>
+        <thead><tr><th>Ref</th><th>Title</th><th>Priority</th><th>Status</th><th>Date</th><th></th></tr></thead>
+        <tbody>
+        {% if recent %}
+          {% for r in recent %}
+          <tr>
+            <td><code style="color:var(--red);font-size:12px;">{{ r.ref }}</code></td>
+            <td style="font-weight:500;">{{ r.title }}</td>
+            <td><span class="badge badge-{{ r.priority.value }}"><span class="badge-dot"></span>{{ r.priority.value }}</span></td>
+            <td><span class="badge status-{{ r.status.value }}">{{ r.status.value }}</span></td>
+            <td style="color:var(--muted);font-size:12px;">{{ r.submitted_at | dtformat }}</td>
+            <td><a href="/requests/{{ r.id }}" class="btn btn-ghost btn-sm">View</a></td>
+          </tr>
+          {% endfor %}
+        {% else %}
+          <tr><td colspan="6">
+            <div class="empty-state">
+              <div class="empty-icon">📭</div>
+              <div class="empty-title">No requests yet</div>
+              <div class="empty-body"><a href="/requests/new" style="color:var(--red)">Submit your first request</a></div>
+            </div>
+          </td></tr>
+        {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  {% if pending_for_me %}
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">⏳ Awaiting Your Approval</span>
+      <span class="badge status-Pending">{{ pending_for_me|length }}</span>
+    </div>
+    {% for r in pending_for_me %}
+    <div style="padding:14px 18px;border-bottom:1px solid var(--border);">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
+        <div>
+          <div style="font-weight:600;font-size:14px;">{{ r.title }}</div>
+          <div style="font-size:12px;color:var(--muted);">{{ r.ref }} · {{ r.requester.full_name }}</div>
+        </div>
+        <span class="badge badge-{{ r.priority.value }}"><span class="badge-dot"></span>{{ r.priority.value }}</span>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <form method="post" action="/requests/{{ r.id }}/decide" style="flex:1;">
+          <input type="hidden" name="action" value="approve"/>
+          <button class="btn btn-approve btn-sm" style="width:100%;">✓ Approve</button>
+        </form>
+        <a href="/requests/{{ r.id }}" class="btn btn-ghost btn-sm" style="flex:1;text-align:center;display:flex;align-items:center;justify-content:center;">View</a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

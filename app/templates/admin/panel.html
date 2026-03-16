@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}Admin Panel{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <div class="page-title">Admin Panel</div>
+    <div class="page-subtitle">Manage users, roles, and system activity</div>
+  </div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 400px;gap:20px;align-items:start;">
+
+  <div class="card">
+    <div class="card-header"><span class="card-title">User Management ({{ users|length }})</span></div>
+    <div class="table-wrapper">
+      <table>
+        <thead><tr><th>User</th><th>Email</th><th>Dept</th><th>Role</th><th>Status</th><th>Joined</th><th>Actions</th></tr></thead>
+        <tbody>
+        {% for u in users %}
+        <tr>
+          <td>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div style="width:30px;height:30px;border-radius:50%;background:{% if u.role.value=='admin' %}#f59e0b{% elif u.role.value=='manager' %}#3b82f6{% else %}var(--charcoal){% endif %};color:white;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">{{ u.initials() }}</div>
+              <span style="font-weight:500;">{{ u.full_name }}</span>
+            </div>
+          </td>
+          <td style="font-size:13px;color:var(--grey);">{{ u.email }}</td>
+          <td style="font-size:13px;color:var(--grey);">{{ u.department or '—' }}</td>
+          <td>
+            <form method="post" action="/admin/users/{{ u.id }}/role">
+              <select name="role" onchange="this.form.submit()" style="padding:4px 8px;font-size:12px;border:1px solid var(--border);border-radius:4px;font-family:inherit;">
+                {% for r in roles %}
+                <option value="{{ r }}" {% if r == u.role.value %}selected{% endif %}>{{ r|capitalize }}</option>
+                {% endfor %}
+              </select>
+            </form>
+          </td>
+          <td>
+            <span class="badge" style="{% if u.is_active %}background:#F0FDF4;color:#1a8a3d;{% else %}background:#F4F4F4;color:#888;{% endif %}">
+              {{ 'Active' if u.is_active else 'Inactive' }}
+            </span>
+          </td>
+          <td style="font-size:12px;color:var(--muted);">{{ u.created_at | dateonly }}</td>
+          <td>
+            {% if u.id != current_user.id %}
+            <form method="post" action="/admin/users/{{ u.id }}/toggle">
+              <button class="btn btn-ghost btn-sm">{{ '🔒 Disable' if u.is_active else '🔓 Enable' }}</button>
+            </form>
+            {% else %}
+            <span style="font-size:12px;color:var(--muted);">You</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><span class="card-title">Recent Audit Log</span></div>
+    <div class="card-body">
+      {% if audit %}
+      <div class="timeline">
+        {% for log in audit %}
+        <div class="tl-item">
+          <div class="tl-dot tl-{{ log.action|lower|replace(' ','-') }}">
+            {% if log.action == 'Approved' %}✓{% elif log.action == 'Rejected' %}✕{% elif log.action == 'Submitted' %}📤{% else %}•{% endif %}
+          </div>
+          <div class="tl-body">
+            <div class="tl-title"><strong>{{ log.actor.full_name }}</strong> · {{ log.action }}</div>
+            {% if log.request %}<div class="tl-meta" style="color:var(--red);">{{ log.request.ref }}</div>{% endif %}
+            <div class="tl-meta">{{ log.timestamp | dtformat }}</div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="empty-state"><div class="empty-icon">📜</div><div class="empty-body">No activity yet</div></div>
+      {% endif %}
+    </div>
+  </div>
+
+</div>
+{% endblock %}

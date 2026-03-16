@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{% block title %}SmartApprove{% endblock %} — HSBC</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/static/css/main.css"/>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="topbar-left">
+      <a href="/dashboard" class="brand">
+        <div class="hsbc-logo"><div></div><div></div><div></div><div></div></div>
+        <span class="brand-name">HSBC <em>SmartApprove</em></span>
+      </a>
+      <nav class="top-nav">
+        <a href="/dashboard"  class="tnav {% if '/dashboard' in request.url.path %}active{% endif %}">Dashboard</a>
+        <a href="/requests/"  class="tnav {% if '/requests' in request.url.path %}active{% endif %}">Requests</a>
+        {% if current_user.role.value in ['manager','admin'] %}
+        <a href="/requests/?status_filter=Pending" class="tnav">Pending</a>
+        {% endif %}
+        {% if current_user.role.value == 'admin' %}
+        <a href="/admin" class="tnav {% if '/admin' in request.url.path %}active{% endif %}">Admin</a>
+        {% endif %}
+      </nav>
+    </div>
+    <div class="topbar-right">
+      <a href="/notifications" class="notif-btn" title="Notifications">
+        🔔
+        {% if unread_notifs|default(0) > 0 %}
+        <span class="notif-dot">{{ unread_notifs }}</span>
+        {% endif %}
+      </a>
+      <div class="user-menu">
+        <div class="avatar-chip">{{ current_user.initials() }}</div>
+        <div class="user-info">
+          <span class="user-name">{{ current_user.full_name }}</span>
+          <span class="user-role role-{{ current_user.role.value }}">{{ current_user.role.value|capitalize }}</span>
+        </div>
+        <div class="user-dropdown">
+          <a href="/auth/logout">Sign Out</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="main-content">
+  {% block content %}{% endblock %}
+</main>
+
+<div id="toast-container" class="toast-container"></div>
+<script src="/static/js/main.js"></script>
+{% block extra_scripts %}{% endblock %}
+</body>
+</html>

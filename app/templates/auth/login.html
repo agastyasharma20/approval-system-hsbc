@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Sign In — SmartApprove</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/static/css/main.css"/>
+</head>
+<body>
+<div class="auth-page">
+  <div class="auth-card">
+    <div class="auth-header">
+      <div class="auth-brand">
+        <div class="hsbc-logo"><div></div><div></div><div></div><div></div></div>
+        <span style="font-family:'Playfair Display',serif;color:white;font-size:20px;">SmartApprove</span>
+      </div>
+      <div style="color:#888;font-size:13px;margin-top:6px;">Corporate Approval Management System</div>
+    </div>
+    <div class="auth-body">
+      {% if registered %}
+      <div class="alert alert-success">✅ Account created! Please sign in.</div>
+      {% endif %}
+      {% if error %}
+      <div class="alert alert-error">{{ error }}</div>
+      {% endif %}
+
+      <form method="post" action="/auth/login">
+        <div class="form-group" style="margin-bottom:16px;">
+          <label>Email Address</label>
+          <input type="email" name="email" placeholder="you@company.com" required autofocus/>
+        </div>
+        <div class="form-group" style="margin-bottom:24px;">
+          <label>Password</label>
+          <input type="password" name="password" placeholder="••••••••" required/>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%;padding:12px;font-size:15px;">
+          Sign In →
+        </button>
+      </form>
+    </div>
+    <div class="auth-footer">
+      Don't have an account? <a href="/auth/register">Create one</a>
+    </div>
+  </div>
+  <div style="margin-top:16px;text-align:center;color:#555;font-size:12px;">
+    © HSBC SmartApprove · Secure Corporate Portal
+  </div>
+</div>
+</body>
+</html>
